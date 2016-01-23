@@ -9,7 +9,7 @@ import (
 func TestCloneCheckout(t *testing.T) {
 	assert := assert.New(t)
 
-	repo, err := Clone("https://github.com/pxue/supbot.git")
+	repo, err := Clone("https://github.com/gophergala2016/supbot.git")
 	assert.NoError(err)
 	assert.NotNil(repo)
 
