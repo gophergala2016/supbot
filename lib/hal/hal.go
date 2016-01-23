@@ -29,7 +29,7 @@ type Hal struct {
 
 var (
 	errMissingCommand    = errors.New(`Missing command.`)
-	errIncompleteCommand = errors.New(`Incomplete command.`)
+	errUnexpectedIssue   = errors.New(`An unexpected issue has occured.`)
 )
 
 var db *bolt.DB
@@ -101,70 +101,68 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 
 	switch s {
 	case "help":
-		h.out.Write([]byte(`[repository]/[branch] [network] [target]`))
+		h.out.Write([]byte(`set-repo [repo-url]`))
+		h.out.Write([]byte(`[network] [target]`))
 		return l, nil
 	case "wipe":
 		h.reset()
 		h.out.Write([]byte(`Now I don't have a memory.`))
 		return l, nil
+	case "set-repo":
+		if len(chunks) > 1 {
+			repo := string(chunks[1])
+			if repo != "" {
+				// TODO: check this is an actual repo.
+				h.repo = repo
+				h.save()
+				h.out.Write([]byte(fmt.Sprintf("You current repo is %q", h.repo)))
+				return l, nil
+			}
+		}
+		h.out.Write([]byte(fmt.Sprintf("Try `set-repo [repo-url]`")))
+		return l, errMissingCommand
 	default:
-		if len(chunks) > 0 {
-			switch string(chunks[0]) {
-			case "set-repo":
-				if len(chunks) > 1 {
-					repo := string(chunks[1])
-					if repo != "" {
-						// TODO: check this is an actual repo.
-						h.repo = repo
-						h.save()
-						h.out.Write([]byte(fmt.Sprintf("You current repo is %q", h.repo)))
-						return l, nil
-					}
-				}
-				h.out.Write([]byte(fmt.Sprintf("Try `set-repo [repo-url]`")))
-				return l, errMissingCommand
-			}
-			if h.repo != "" {
+		if h.repo != "" {
 
-				h.out.Write([]byte(fmt.Sprintf("Hang in there, I'm cloning %q...", h.repo)))
+			h.out.Write([]byte(fmt.Sprintf("Hang in there, I'm cloning %q...", h.repo)))
 
-				// TODO: grab branch name from URL, if any.
-				repo, err := git.Clone(h.repo)
-				if err != nil {
-					return l, err
-				}
-
-				if err := repo.Checkout("master"); err != nil {
-					return l, err
-				}
-
-				h.out.Write([]byte(fmt.Sprintf("Running sup...")))
-
-				// TODO: insert sup magic here.
-				var outbuf bytes.Buffer
-				cmd := sup.NewSup(&outbuf).Setwd(repo.Dir())
-				defer func() {
-					log.Printf("Cleaning %v", repo.Dir())
-					os.RemoveAll(repo.Dir())
-				}()
-
-				if len(chunks) > 0 {
-					cmd.Network(string(chunks[0]))
-				}
-				if len(chunks) > 1 {
-					cmd.Target(string(chunks[1]))
-				}
-
-				err = cmd.Exec()
-
-				h.out.Write(outbuf.Bytes())
+			// TODO: grab branch name from URL, if any.
+			repo, err := git.Clone(h.repo)
+			if err != nil {
 				return l, err
-			} else {
-				h.out.Write([]byte(fmt.Sprintf("Missing repo, try `set-repo [repo-url]`")))
 			}
+
+			if err := repo.Checkout("master"); err != nil {
+				return l, err
+			}
+
+			h.out.Write([]byte(fmt.Sprintf("Running sup...")))
+
+			// TODO: insert sup magic here.
+			var outbuf bytes.Buffer
+			cmd := sup.NewSup(&outbuf).Setwd(repo.Dir())
+			defer func() {
+				log.Printf("Cleaning %v", repo.Dir())
+				os.RemoveAll(repo.Dir())
+			}()
+
+			if len(chunks) > 0 {
+				cmd.Network(string(chunks[0]))
+			}
+			if len(chunks) > 1 {
+				cmd.Target(string(chunks[1]))
+			}
+
+			err = cmd.Exec()
+
+			h.out.Write(outbuf.Bytes())
+			return l, err
+		} else {
+			h.out.Write([]byte(fmt.Sprintf("Missing repo, try `set-repo [repo-url]`")))
 			return l, errMissingCommand
 		}
 	}
 
-	return l, nil
+	// Catch-all, this should never run
+	return l, errUnexpectedIssue
 }
