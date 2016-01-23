@@ -1,1 +1,1 @@
-website: bin/supbot
+web: bin/supbot
