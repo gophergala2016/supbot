@@ -1,0 +1,5 @@
+{
+	"ImportPath": "github.com/gophergala2016/supbot",
+	"GoVersion": "go1.5",
+	"Deps": []
+}
