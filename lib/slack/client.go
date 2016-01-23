@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/nlopes/slack"
+	"github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/nlopes/slack"
 	"github.com/gophergala2016/supbot/lib/hal"
 )
 

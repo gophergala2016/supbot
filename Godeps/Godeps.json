@@ -1,17 +1,40 @@
 {
 	"ImportPath": "github.com/gophergala2016/supbot",
 	"GoVersion": "go1.5",
-    "Packages": [
-        "./..."
-    ],
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
-        {
-            "ImportPath": "github.com/boltdb/bolt",
-            "Rev": "ee4a0888a9abe7eefe5a0992ca4cb06864839873"
-        },
-        {
-            "ImportPath": "github.com/nlopes/slack",
-            "Rev": "fecd1dd0008dcb1a01e18b900b1abd4fd4e79177"
-        }
-    ]
+		{
+			"ImportPath": "github.com/boltdb/bolt",
+			"Comment": "v1.1.0-65-gee4a088",
+			"Rev": "ee4a0888a9abe7eefe5a0992ca4cb06864839873"
+		},
+		{
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
+		},
+		{
+			"ImportPath": "github.com/nlopes/slack",
+			"Comment": "v0.0.1-74-gfecd1dd",
+			"Rev": "fecd1dd0008dcb1a01e18b900b1abd4fd4e79177"
+		},
+		{
+			"ImportPath": "github.com/pmezard/go-difflib/difflib",
+			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Comment": "v1.1.3",
+			"Rev": "f390dcf405f7b83c997eac1b06768bb9f44dec18"
+		},
+		{
+			"ImportPath": "golang.org/x/net/websocket",
+			"Rev": "2e9cee70ee697e0a2ef894b560dda50dec7dff58"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "20457ee8ea8546920d3f4e19e405da45250dc5a5"
+		}
+	]
 }

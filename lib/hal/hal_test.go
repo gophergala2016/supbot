@@ -2,7 +2,7 @@ package hal
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
+	"github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/stretchr/testify/assert"
 	"log"
 	"testing"
 )

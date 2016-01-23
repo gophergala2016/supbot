@@ -3,7 +3,7 @@ package git
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/stretchr/testify/assert"
 )
 
 func TestCloneCheckout(t *testing.T) {

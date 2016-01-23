@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/boltdb/bolt"
+	"github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/boltdb/bolt"
 	"github.com/gophergala2016/supbot/lib/git"
 	"github.com/gophergala2016/supbot/lib/sup"
 )
@@ -28,8 +28,8 @@ type Hal struct {
 }
 
 var (
-	errMissingCommand    = errors.New(`Missing command.`)
-	errUnexpectedIssue   = errors.New(`An unexpected issue has occured.`)
+	errMissingCommand  = errors.New(`Missing command.`)
+	errUnexpectedIssue = errors.New(`An unexpected issue has occured.`)
 )
 
 var db *bolt.DB
