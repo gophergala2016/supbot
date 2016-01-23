@@ -2,10 +2,13 @@ package slack
 
 import (
 	"bytes"
+	"fmt"
+	"io"
 	"log"
 	"strings"
 
 	"github.com/nlopes/slack"
+	"github.com/pxue/supbot/lib/hal"
 )
 
 type Slack struct {
@@ -17,6 +20,10 @@ type Slack struct {
 	channel string
 }
 
+var (
+	supBot io.Writer
+)
+
 func NewClient(token string) *Slack {
 	if len(token) < 1 {
 		panic("supbot: can't seem to start myself")
@@ -24,8 +31,9 @@ func NewClient(token string) *Slack {
 	api := slack.New(token)
 
 	s := &Slack{token: token, rtm: api.NewRTM()}
-	go s.rtm.ManageConnection()
+	supBot = hal.NewHal(s)
 
+	go s.rtm.ManageConnection()
 	return s
 }
 
@@ -65,12 +73,13 @@ Loop:
 				for _, ch := range ev.Info.Channels {
 					log.Printf("slackbot: joined channel %s\n", ch.Name)
 				}
+				s.botUID = fmt.Sprintf("<@%s>: ", ev.Info.User.ID)
 			case *slack.MessageEvent:
 				s.channel = ev.Msg.Channel
 				// must be mentioned
 				if s.wasMentioned(ev.Text) {
-					// for now, printlin
-					log.Println(ev.Text)
+					// TODO: pass to bot
+					supBot.Write([]byte(strings.TrimPrefix(ev.Text, s.botUID)))
 				}
 			case *slack.InvalidAuthEvent:
 				log.Println("supbot: I seem to be disconnected, can't let you do that.")
