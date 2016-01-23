@@ -1,0 +1,21 @@
+# Supfile for local "supslack" example
+---
+
+env: # Environment variables for the commands
+  NAME: example
+  REPO: github.com/pxue/supslack
+  BRANCH: master
+  IMAGE: pressly/example
+  HOST_PORT: 8000
+  CONTAINER_PORT: 8000
+
+networks: # Groups of hosts
+  local:
+    hosts:
+      - localhost
+
+commands: # Named set of commands to be run remotely
+  ping:
+    desc: Print uname and current date/time.
+    run: uname -a; date
+
