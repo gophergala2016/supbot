@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/gophergala2016/supbot/lib/git"
 	"github.com/gophergala2016/supbot/lib/sup"
 )
 
@@ -67,9 +68,21 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 				return l, errMissingCommand
 			}
 			if h.cwd != "" {
+
+				// TODO: grab branch name from URL, if any.
+
+				repo, err := git.Clone(h.cwd)
+				if err != nil {
+					return l, err
+				}
+
+				if err := repo.Checkout("master"); err != nil {
+					return l, err
+				}
+
 				// TODO: insert sup magic here.
 				var outbuf bytes.Buffer
-				cmd := sup.NewSup(&outbuf)
+				cmd := sup.NewSup(&outbuf).Setwd(repo.Dir())
 
 				if len(chunks) > 0 {
 					cmd.Network(string(chunks[0]))
@@ -78,7 +91,7 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 					cmd.Target(string(chunks[1]))
 				}
 
-				err := cmd.Exec()
+				err = cmd.Exec()
 
 				h.out.Write(outbuf.Bytes())
 				return l, err
