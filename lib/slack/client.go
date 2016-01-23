@@ -14,6 +14,7 @@ import (
 type Slack struct {
 	token  string // slack token
 	rtm    *slack.RTM
+	api    *slack.Client
 	botUID string
 
 	// singleton channel name
@@ -30,10 +31,10 @@ func NewClient(token string) *Slack {
 	}
 	api := slack.New(token)
 
-	s := &Slack{token: token, rtm: api.NewRTM()}
-	supBot = hal.NewHal(s)
-
+	s := &Slack{token: token, api: api, rtm: api.NewRTM()}
 	go s.rtm.ManageConnection()
+
+	supBot = hal.NewHal(s)
 	return s
 }
 
@@ -49,14 +50,34 @@ func (s *Slack) wasMentioned(msg string) bool {
 func (s *Slack) Write(o []byte) (n int, err error) {
 	outBuf := bytes.Buffer{}
 	outBuf.Write(o)
-	outBuf.WriteString("\n")
 
-	s.rtm.SendMessage(
-		s.rtm.NewOutgoingMessage(
-			outBuf.String(),
-			s.channel,
-		),
-	)
+	//s.rtm.SendMessage(
+	//s.rtm.NewOutgoingMessage(
+	//outBuf.String(),
+	//s.channel,
+	//),
+	//)
+	params := slack.NewPostMessageParameters()
+	params.Username = "supslack"
+	params.AsUser = true
+
+	params.Attachments = []slack.Attachment{
+		{
+			//AuthorName: authorName,
+			//AuthorIcon: authorIcon,
+			Text: fmt.Sprintf("%s\n\u2014\n", outBuf.String()), // \u200B for space
+			//ThumbURL: thumbURL,
+			//Fields: []AttachmentField{
+			//AttachmentField{
+			//Title: "",
+			//Value: fmt.Sprintf("*<%s|%s>*\n%s", post.ShortUrl, post.Title, description),
+			//Short: false,
+			//},
+			//},
+			MarkdownIn: []string{"text"},
+		}}
+
+	s.api.PostMessage(s.channel, "", params)
 	return len(o), nil
 }
 

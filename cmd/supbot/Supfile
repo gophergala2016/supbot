@@ -18,3 +18,6 @@ commands: # Named set of commands to be run remotely
   ping:
     desc: Print uname and current date/time.
     run: uname -a; date
+  lsroot:
+    desc: List the root directory
+    run: ls -al /

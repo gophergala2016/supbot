@@ -3,7 +3,7 @@
 help:
 	@echo "run:     Run code in dev mode."
 	@echo "build:   Build code."
-	#@echo "test:    Run tests."
+#	@echo "test:    Run tests."
 	@echo "install: Install binary."
 	@echo "clean:   Clean up."
 
@@ -20,7 +20,7 @@ build_pkgs:
 	go build ./...
 
 #test:
-	#go test
+#	go test
 
 install: build
 	go install ./...

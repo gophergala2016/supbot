@@ -8,7 +8,7 @@ import (
 
 func TestNewSup(t *testing.T) {
 	var b bytes.Buffer
-	if err := NewSup(&b).Network("local").Target("ping").Setwd("../..").Exec(); err != nil {
+	if err := NewSup(&b).Network("local").Target("ping").Setwd("../../cmd/supbot").Exec(); err != nil {
 		log.Fatalln("Testing error:", err)
 	}
 
