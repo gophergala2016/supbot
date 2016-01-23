@@ -51,33 +51,33 @@ func (s *Slack) Write(o []byte) (n int, err error) {
 	outBuf := bytes.Buffer{}
 	outBuf.Write(o)
 
-	//s.rtm.SendMessage(
-	//s.rtm.NewOutgoingMessage(
-	//outBuf.String(),
-	//s.channel,
-	//),
-	//)
-	params := slack.NewPostMessageParameters()
-	params.Username = "supslack"
-	params.AsUser = true
+	s.rtm.SendMessage(
+		s.rtm.NewOutgoingMessage(
+			outBuf.String(),
+			s.channel,
+		),
+	)
+	//params := slack.NewPostMessageParameters()
+	//params.Username = "supslack"
+	//params.AsUser = true
 
-	params.Attachments = []slack.Attachment{
-		{
-			//AuthorName: authorName,
-			//AuthorIcon: authorIcon,
-			Text: fmt.Sprintf("%s\n\u2014\n", outBuf.String()), // \u200B for space
-			//ThumbURL: thumbURL,
-			//Fields: []AttachmentField{
-			//AttachmentField{
-			//Title: "",
-			//Value: fmt.Sprintf("*<%s|%s>*\n%s", post.ShortUrl, post.Title, description),
-			//Short: false,
-			//},
-			//},
-			MarkdownIn: []string{"text"},
-		}}
+	//params.Attachments = []slack.Attachment{
+	//{
+	////AuthorName: authorName,
+	////AuthorIcon: authorIcon,
+	//Text: fmt.Sprintf("%s\n\u2014\n", outBuf.String()), // \u200B for space
+	////ThumbURL: thumbURL,
+	////Fields: []AttachmentField{
+	////AttachmentField{
+	////Title: "",
+	////Value: fmt.Sprintf("*<%s|%s>*\n%s", post.ShortUrl, post.Title, description),
+	////Short: false,
+	////},
+	////},
+	//MarkdownIn: []string{"text"},
+	//}}
 
-	s.api.PostMessage(s.channel, "", params)
+	//s.api.PostMessage(s.channel, "", params)
 	return len(o), nil
 }
 
