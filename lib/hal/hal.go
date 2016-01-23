@@ -123,6 +123,8 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 			}
 			if h.repo != "" {
 
+				h.out.Write([]byte(fmt.Sprintf("Hang in there, I'm cloning %q...", h.repo)))
+
 				// TODO: grab branch name from URL, if any.
 				repo, err := git.Clone(h.repo)
 				if err != nil {
@@ -132,6 +134,8 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 				if err := repo.Checkout("master"); err != nil {
 					return l, err
 				}
+
+				h.out.Write([]byte(fmt.Sprintf("Running sup...")))
 
 				// TODO: insert sup magic here.
 				var outbuf bytes.Buffer
