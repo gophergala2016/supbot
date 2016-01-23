@@ -9,7 +9,7 @@ import (
 
 var supCommand string
 
-func init () {
+func init() {
 	out, err := exec.Command("/usr/bin/which", "sup").Output()
 	if err != nil {
 		log.Fatalln("sup init issue:", err)
@@ -45,7 +45,7 @@ func (s *Sup) Exec() error {
 	cmd := exec.Command(supCommand, s.network, s.target)
 	cmd.Dir = s.wd
 	// log.Printf("Working Directory: %v", cmd.Dir)
-	
+
 	out, err := cmd.Output()
 	if err != nil {
 		return err
