@@ -15,7 +15,7 @@ import (
 
 var space = []byte(` `)
 
-// Making sure this is a reader.
+// Making sure this is a writer.
 var _ = io.Writer(&Hal{})
 
 var (
