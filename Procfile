@@ -1,1 +1,1 @@
-web: bin/supbot
+worker: bin/supbot
