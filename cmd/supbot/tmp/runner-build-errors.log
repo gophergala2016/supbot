@@ -1,7 +1,0 @@
-# github.com/pxue/supbot/slack
-../../slack/client.go:26: undefined: rtm
-../../slack/client.go:27: undefined: rtm in rtm.ManageConnection
-../../slack/client.go:29: undefined: rtm
-../../slack/client.go:47: undefined: rtm in rtm.NewOutgoingMessage
-../../slack/client.go:52: missing return at end of function
-../../slack/client.go:70: undefined: wasMentioned
