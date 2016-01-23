@@ -13,7 +13,7 @@ import (
 var supCommand string
 
 var (
-	_ = s.Stackup // NOTE: godeps..
+	_ s.Stackup // NOTE: godeps..
 )
 
 type Sup struct {
