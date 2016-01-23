@@ -20,6 +20,10 @@ func TestSendCommand(t *testing.T) {
 			err:     false,
 		},
 		{
+			command: "wipe",
+			err:     false,
+		},
+		{
 			command: "prod deploy",
 			err:     true,
 		},

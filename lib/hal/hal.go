@@ -5,7 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
+	"os"
 
+	"github.com/boltdb/bolt"
 	"github.com/gophergala2016/supbot/lib/git"
 	"github.com/gophergala2016/supbot/lib/sup"
 )
@@ -20,8 +23,8 @@ var (
 )
 
 type Hal struct {
-	out io.Writer
-	cwd string // current working directory.
+	out  io.Writer
+	repo string // current working directory.
 }
 
 var (
@@ -29,10 +32,56 @@ var (
 	errIncompleteCommand = errors.New(`Incomplete command.`)
 )
 
+var db *bolt.DB
+
+func init() {
+	var err error
+	db, err = bolt.Open("hal.db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.Update(func(tx *bolt.Tx) error {
+		tx.CreateBucket([]byte("settings"))
+		return nil
+	})
+
+}
+
 func NewHal(out io.Writer) *Hal {
-	return &Hal{
+	h := &Hal{
 		out: out,
 	}
+
+	h.restore()
+
+	return h
+}
+
+func (h *Hal) reset() error {
+	h.repo = ""
+	return nil
+}
+
+func (h *Hal) save() error {
+	// HAL remembers settings.
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("settings"))
+		b.Put([]byte("repo"), []byte(h.repo))
+		return nil
+	})
+	return err
+}
+
+func (h *Hal) restore() error {
+	// HAL remembers settings.
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("settings"))
+		v := b.Get([]byte("repo"))
+		h.repo = string(v)
+		return nil
+	})
+	return err
 }
 
 func (h *Hal) Write(cmd []byte) (n int, err error) {
@@ -51,27 +100,31 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 	case "help":
 		h.out.Write([]byte(`[repository]/[branch] [network] [target]`))
 		return l, nil
+	case "wipe":
+		h.reset()
+		h.out.Write([]byte(`Now I don't have a memory.`))
+		return l, nil
 	default:
 		if len(chunks) > 0 {
 			switch string(chunks[0]) {
 			case "set-repo":
 				if len(chunks) > 1 {
-					cwd := string(chunks[1])
-					if cwd != "" {
+					repo := string(chunks[1])
+					if repo != "" {
 						// TODO: check this is an actual repo.
-						h.cwd = cwd
-						h.out.Write([]byte(fmt.Sprintf("You current repo is %q", h.cwd)))
+						h.repo = repo
+						h.save()
+						h.out.Write([]byte(fmt.Sprintf("You current repo is %q", h.repo)))
 						return l, nil
 					}
 				}
 				h.out.Write([]byte(fmt.Sprintf("Try `set-repo [repo-url]`")))
 				return l, errMissingCommand
 			}
-			if h.cwd != "" {
+			if h.repo != "" {
 
 				// TODO: grab branch name from URL, if any.
-
-				repo, err := git.Clone(h.cwd)
+				repo, err := git.Clone(h.repo)
 				if err != nil {
 					return l, err
 				}
@@ -83,6 +136,10 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 				// TODO: insert sup magic here.
 				var outbuf bytes.Buffer
 				cmd := sup.NewSup(&outbuf).Setwd(repo.Dir())
+				defer func() {
+					log.Printf("Cleaning %v", repo.Dir())
+					os.RemoveAll(repo.Dir())
+				}()
 
 				if len(chunks) > 0 {
 					cmd.Network(string(chunks[0]))
