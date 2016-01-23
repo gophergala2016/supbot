@@ -1,5 +1,10 @@
 {
 	"ImportPath": "github.com/gophergala2016/supbot",
 	"GoVersion": "go1.5",
-	"Deps": []
+	"Deps": [
+        {
+            "ImportPath": "github.com/nlopes/slack",
+            "Rev": "fecd1dd0008dcb1a01e18b900b1abd4fd4e79177"
+        }
+    ]
 }
