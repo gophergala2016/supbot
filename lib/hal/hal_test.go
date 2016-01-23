@@ -24,13 +24,21 @@ func TestSendCommand(t *testing.T) {
 			err:     true,
 		},
 		{
+			command: "local ping",
+			err:     true,
+		},
+		{
 			command: `set-repo git@github.com:xiam/go-playground.git`,
 			err:     false,
 		},
 		{
-			command: "prod deploy",
+			command: "local ping",
 			err:     false,
 		},
+		//{
+		//	command: "prod deploy",
+		//	err:     false,
+		//},
 	}
 
 	buf := bytes.NewBuffer(nil)
