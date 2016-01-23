@@ -6,9 +6,15 @@ import (
 	"log"
 	"os/exec"
 	"strings"
+
+	s "github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/pressly/sup"
 )
 
 var supCommand string
+
+var (
+	_ = s.Stackup // NOTE: godeps..
+)
 
 type Sup struct {
 	network string
