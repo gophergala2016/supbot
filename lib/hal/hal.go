@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/pxue/supbot/lib/sup"
+	"github.com/gophergala2016/supbot/lib/sup"
 )
 
 var space = []byte(` `)

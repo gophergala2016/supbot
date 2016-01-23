@@ -29,8 +29,8 @@ clean:
 	@rm -rf ./bin
 
 deps:
-	@glock sync -n github.com/pxue/supbot < Glockfile
+	@glock sync -n github.com/gophergala2016/supbot < Glockfile
 
 update_deps:
-	@glock save -n github.com/pxue/supbot > Glockfile
+	@glock save -n github.com/gophergala2016/supbot > Glockfile
 

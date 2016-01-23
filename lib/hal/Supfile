@@ -3,7 +3,7 @@
 
 env: # Environment variables for the commands
   NAME: example
-  REPO: github.com/pxue/supbot
+  REPO: github.com/gophergala2016/supbot
   BRANCH: master
   IMAGE: supbot
   HOST_PORT: 8000

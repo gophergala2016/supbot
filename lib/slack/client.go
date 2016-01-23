@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/nlopes/slack"
-	"github.com/pxue/supbot/lib/hal"
+	"github.com/gophergala2016/supbot/lib/hal"
 )
 
 type Slack struct {
