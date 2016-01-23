@@ -8,7 +8,7 @@
     "chatops"
   ],
   "image": "heroku/go:1.5",
-  "mount_dir": "src/github.com/gophergala2016/supbot",
+  "mount_dir": "src/github.com/gophergala2016/supbot/cmd/supbot",
   "website": "http://github.com/gophergala2016/supbot",
   "repository": "http://github.com/gophergala2016/supbot"
 }
