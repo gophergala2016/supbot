@@ -10,15 +10,6 @@ import (
 
 var supCommand string
 
-func init() {
-	out, err := exec.Command("/usr/bin/which", "sup").Output()
-	if err != nil {
-		log.Fatalln("sup init issue:", err)
-		return
-	}
-	supCommand = strings.TrimSpace(string(out))
-}
-
 type Sup struct {
 	network string
 	target  string
@@ -42,10 +33,10 @@ func (s *Sup) Target(t string) *Sup {
 }
 
 func (s *Sup) Exec() error {
-	log.Printf("Command: %v %v %v\n", supCommand, s.network, s.target)
-	cmd := exec.Command(supCommand, s.network, s.target)
+	cmd := exec.Command("sup", s.network, s.target)
 	cmd.Dir = s.wd
-	// log.Printf("Working Directory: %v", cmd.Dir)
+	log.Println("Command:", strings.Join(cmd.Args, " "))
+	log.Printf("Working Directory: %v", cmd.Dir)
 
 	var outbuf bytes.Buffer
 	var errbuf bytes.Buffer
