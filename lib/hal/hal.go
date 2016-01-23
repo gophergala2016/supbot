@@ -87,6 +87,9 @@ func (h *Hal) restore() error {
 func (h *Hal) Write(cmd []byte) (n int, err error) {
 	l := len(cmd)
 
+	cmd = bytes.Replace(cmd, []byte("<"), []byte(""), -1)
+	cmd = bytes.Replace(cmd, []byte(">"), []byte(""), -1)
+
 	chunks := bytes.Split(cmd, space)
 
 	if len(chunks) < 1 {
