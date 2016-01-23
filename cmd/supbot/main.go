@@ -1,9 +1,16 @@
 package main
 
-import "github.com/gophergala2016/supbot/lib/slack"
+import (
+	"os"
+
+	"github.com/gophergala2016/supbot/lib/slack"
+)
 
 func main() {
-	token := "xoxb-19232920311-vb7KYcw8EpdfcN9Qz3v7cWpl"
+	token := os.Getenv("SLACK_TOKEN")
+	if token == "" {
+		panic("slack token must be set")
+	}
 
 	s := slack.NewClient(token)
 	s.InitializeRTM()
