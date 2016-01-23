@@ -4,5 +4,14 @@
     "Packages": [
         "./..."
     ],
-	"Deps": []
+	"Deps": [
+        {
+            "ImportPath": "github.com/boltdb/bolt",
+            "Rev": "ee4a0888a9abe7eefe5a0992ca4cb06864839873"
+        },
+        {
+            "ImportPath": "github.com/nlopes/slack",
+            "Rev": "fecd1dd0008dcb1a01e18b900b1abd4fd4e79177"
+        }
+    ]
 }
