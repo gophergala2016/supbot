@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
+	"github.com/pxue/supbot/lib/sup"
 )
 
 var space = []byte(` `)
@@ -66,8 +68,20 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 			}
 			if h.cwd != "" {
 				// TODO: insert sup magic here.
-				h.out.Write([]byte("Ok, done."))
-				return l, nil
+				var outbuf bytes.Buffer
+				cmd := sup.NewSup(&outbuf)
+
+				if len(chunks) > 0 {
+					cmd.Network(string(chunks[0]))
+				}
+				if len(chunks) > 1 {
+					cmd.Target(string(chunks[1]))
+				}
+
+				err := cmd.Exec()
+
+				h.out.Write(outbuf.Bytes())
+				return l, err
 			} else {
 				h.out.Write([]byte(fmt.Sprintf("Missing repo, try `set-repo [repo-url]`")))
 			}

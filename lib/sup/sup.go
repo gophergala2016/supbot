@@ -1,6 +1,7 @@
 package sup
 
 import (
+	"bytes"
 	"io"
 	"log"
 	"os/exec"
@@ -41,19 +42,25 @@ func (s *Sup) Target(t string) *Sup {
 }
 
 func (s *Sup) Exec() error {
-	// log.Printf("Command: %v %v %v\n", supCommand, s.network, s.target)
+	log.Printf("Command: %v %v %v\n", supCommand, s.network, s.target)
 	cmd := exec.Command(supCommand, s.network, s.target)
 	cmd.Dir = s.wd
 	// log.Printf("Working Directory: %v", cmd.Dir)
 
-	out, err := cmd.Output()
+	var outbuf bytes.Buffer
+	var errbuf bytes.Buffer
+
+	cmd.Stdout = &outbuf
+	cmd.Stderr = &errbuf
+
+	err := cmd.Run()
 	if err != nil {
+		s.writer.Write(errbuf.Bytes())
 		return err
 	}
-	if _, err := s.writer.Write(out); err != nil {
-		return err
-	}
-	return nil
+
+	_, err = s.writer.Write(outbuf.Bytes())
+	return err
 }
 
 // TODO: Pass in a command directly
