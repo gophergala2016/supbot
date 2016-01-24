@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	stackup "github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/pressly/sup"
@@ -63,11 +64,18 @@ func (s *Sup) Exec() error {
 
 	// Do some piping magic here
 	old := os.Stdout
+	oldErr := os.Stderr
 	read, write, _ := os.Pipe()
+	errRead, errWrite, _ := os.Pipe()
 
 	os.Stdout = write
-	s.Run(&network, cmds...)
+	os.StdErr = errWrite
+	err := s.Run(&network, cmds...)
+	if err != nil {
+		log.Println("got error %v", err)
+	}
 	write.Close()
+	errWrite.Close()
 
 	//out := fmt.Sprintf("<@%s>: \n", msg.User)
 	var out string
@@ -75,10 +83,18 @@ func (s *Sup) Exec() error {
 	for scanner.Scan() {
 		out = fmt.Sprintf("%s %s\n", out, scanner.Text())
 	}
-	os.Stdout = old // reset stdout
+	var errOut string
+	scanner := bufio.NewScanner(errRead)
+	for scanner.Scan() {
+		errOut = fmt.Sprintf("%s %s\n", errOut, scanner.Text())
+	}
+	os.Stdout = old    // reset stdout
+	os.Stderr = oldErr // reset stderr
+	log.Println("got this output: %v", out)
+	log.Println("got this err output: %v", errOut)
 
 	//_, err = s.writer.Write(outbuf.Bytes())
-	_, err := s.writer.Write([]byte(out))
+	_, err = s.writer.Write([]byte(out))
 	return err
 }
 
