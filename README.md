@@ -1,5 +1,5 @@
 # supbot
-Chatops bot for Sup
+Simple slack bot powered deployment tool with Sup
 
 ```
 lib/slack // slack bot things
@@ -11,15 +11,24 @@ lib/hal // instruction parser things
 
 ## What is Supbot/Supslack?
 
-Checkout Sup first
+`Sup` (https://github.com/pressly/sup) let's you quickly execute remote commands
+on remote machines based on predefined and simple rules. As explained by the
+project: 
 
-https://github.com/pressly/sup
+```
+Stack Up is a simple deployment tool that performs given set of commands on multiple hosts in parallel.
+It reads Supfile, a YAML configuration file, which defines networks (groups of hosts), commands and targets.
+
+```
+
+## What is Supbot?
 
 Supbot is a slack bot that listens to Sup commands. You can easily monitor,
 deploy, bring-up, bring-down, tail logs... on any environment, across any
 network directly from your slack channel.
 
 You can do anything Sup can do, directly from Slack.
+
 
 ## Deploying to Heroku
 
