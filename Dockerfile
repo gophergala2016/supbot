@@ -11,6 +11,8 @@ RUN cp /src/supbot/bin/supbot /bin/supbot
 RUN go get -u github.com/pressly/sup/cmd/sup
 RUN go build -o /bin/sup github.com/pressly/sup/cmd/sup
 
+VOLUME /root/.ssh
+
 RUN mkdir -p /var/supbot
 WORKDIR /var/supbot
 

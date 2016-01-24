@@ -45,6 +45,7 @@ commands: # Named set of commands to be run remotely
         -d \
         -e SLACK_TOKEN=$SLACK_TOKEN \
         --restart=always \
+        -v /home/deploy/.ssh:/root/.ssh \
         -v /home/deploy/data:/var/supbot \
         --name $NAME \
         -t $NAME
