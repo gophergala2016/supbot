@@ -96,9 +96,14 @@ Loop:
 				log.Println("slackbot: I'm online dave.")
 				for _, ch := range ev.Info.Channels {
 					log.Printf("slackbot: joined channel %s\n", ch.Name)
+					s.rtm.SendMessage(
+						s.rtm.NewOutgoingMessage(
+							"Never send a human to do a machine's job.",
+							ch.Name,
+						),
+					)
 				}
 				s.botUID = fmt.Sprintf("<@%s>: ", ev.Info.User.ID)
-				s.Write([]byte("Never send a human to do a machine's job."))
 			case *slack.MessageEvent:
 				s.channel = ev.Msg.Channel
 				// must be mentioned
