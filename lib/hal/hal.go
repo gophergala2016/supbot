@@ -154,6 +154,10 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 			}
 
 			err = cmd.Exec()
+			if err != nil {
+				h.out.Write([]byte(fmt.Sprintf("I can't let you do that, Dave. %v", err)))
+				return l, err
+			}
 
 			h.out.Write(outbuf.Bytes())
 			return l, err

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
+	"strings"
 
 	stackup "github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/pressly/sup"
 )
@@ -24,8 +24,17 @@ type Sup struct {
 }
 
 var (
-	ErrInvalidTarget = errors.New("invalid target")
+	ErrInvalidTarget  = errors.New("invalid target")
+	ErrInvalidNetwork = errors.New("invalid network")
 )
+
+func stripColor(msg string) string {
+	msg = strings.TrimPrefix(msg, stackup.ResetColor)
+	for _, c := range stackup.Colors {
+		msg = strings.TrimPrefix(msg, c)
+	}
+	return msg
+}
 
 func (s *Sup) Network(n string) *Sup {
 	s.network = n
@@ -38,24 +47,11 @@ func (s *Sup) Target(t string) *Sup {
 }
 
 func (s *Sup) Exec() error {
-	//cmd := exec.Command("sup", s.network, s.target)
-	//cmd.Dir = s.wd
-	//log.Println("Command:", strings.Join(cmd.Args, " "))
-	//log.Printf("Working Directory: %v", cmd.Dir)
-
-	//var outbuf bytes.Buffer
-	//var errbuf bytes.Buffer
-
-	//cmd.Stdout = &outbuf
-	//cmd.Stderr = &errbuf
-
-	//err := cmd.Run()
-	//if err != nil {
-	//s.writer.Write(errbuf.Bytes())
-	//return err
-	//}
-	network, _ := s.config.Networks[s.network]
-
+	//TODO: stderr capture
+	network, ok := s.config.Networks[s.network]
+	if !ok {
+		return ErrInvalidNetwork
+	}
 	command, isCommand := s.config.Commands[s.target]
 	if !isCommand {
 		return ErrInvalidTarget
@@ -64,41 +60,19 @@ func (s *Sup) Exec() error {
 
 	// Do some piping magic here
 	old := os.Stdout
-	//oldErr := os.Stderr
-
 	read, write, _ := os.Pipe()
-	//errRead, errWrite, _ := os.Pipe()
 
 	os.Stdout = write
-	//os.Stderr = errWrite
-
-	var out string
-	//var errOut string
-
 	err := s.Run(&network, cmds...)
-
 	write.Close()
-	//errWrite.Close()
 
-	//if err == nil {
 	scanner := bufio.NewScanner(read)
+	var out string
 	for scanner.Scan() {
-		out = fmt.Sprintf("%s %s\n", out, scanner.Text())
+		out = fmt.Sprintf("%s %s\n", out, stripColor(scanner.Text()))
 	}
-
-	//scanner = bufio.NewScanner(errRead)
-	//for scanner.Scan() {
-	//errOut = fmt.Sprintf("%s %s\n", errOut, scanner.Text())
-	//}
-
-	//}
 	os.Stdout = old // reset stdout
-	//os.Stderr = oldErr // reset stderr
 
-	log.Printf("got this stdout: %v", out)
-	//log.Printf("got this stderr: %v", errOut)
-
-	//_, err = s.writer.Write(outbuf.Bytes())
 	_, err = s.writer.Write([]byte(out))
 	return err
 }
