@@ -140,7 +140,7 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 
 			var outbuf bytes.Buffer
 			// TODO: check error
-			cmd, _ := sup.NewSup(&outbuf, repo.Dir())
+			cmd, _ := sup.New(&outbuf, repo.Dir())
 			defer func() {
 				log.Printf("Cleaning %v", repo.Dir())
 				os.RemoveAll(repo.Dir())

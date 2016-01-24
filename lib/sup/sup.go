@@ -36,6 +36,22 @@ func stripColor(msg string) string {
 	return msg
 }
 
+func New(w io.Writer, wdir string) (*Sup, error) {
+	// load the supfile
+	conf, err := stackup.NewSupfile(fmt.Sprintf("%s/Supfile", wdir))
+	if err != nil {
+		return nil, err
+	}
+
+	// create new Stackup app.
+	app, err := stackup.New(conf)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Sup{Stackup: app, writer: w, config: conf}, nil
+}
+
 func (s *Sup) Network(n string) *Sup {
 	s.network = n
 	return s
@@ -81,19 +97,3 @@ func (s *Sup) Exec() error {
 // func (s *sup) Cmd() {
 // err2 := sup.NewSup(io.Writer).Cmd("Some sup command")
 // }
-
-func NewSup(w io.Writer, wdir string) (*Sup, error) {
-	// load the supfile
-	conf, err := stackup.NewSupfile(fmt.Sprintf("%s/Supfile", wdir))
-	if err != nil {
-		return nil, err
-	}
-
-	// create new Stackup app.
-	app, err := stackup.New(conf)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Sup{Stackup: app, writer: w, config: conf}, nil
-}
