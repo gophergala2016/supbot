@@ -129,10 +129,14 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 			// TODO: grab branch name from URL, if any.
 			repo, err := git.Clone(h.repo)
 			if err != nil {
+				h.out.Write([]byte(fmt.Sprintf("I'm sorry Dave, %v", err)))
+				h.out.Write([]byte("Clone failed."))
 				return l, err
 			}
 
 			if err := repo.Checkout("master"); err != nil {
+				h.out.Write([]byte(fmt.Sprintf("I'm sorry Dave, %v", err)))
+				h.out.Write([]byte("Check out failed."))
 				return l, err
 			}
 
@@ -154,9 +158,13 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 			}
 
 			err = cmd.Exec()
+			if err != nil {
+				h.out.Write([]byte(fmt.Sprintf("I'm sorry Dave, %v", err)))
+				return l, err
+			}
 
 			h.out.Write(outbuf.Bytes())
-			return l, err
+			return l, nil
 		} else {
 			h.out.Write([]byte(fmt.Sprintf("Missing repo, try `set-repo [repo-url]`")))
 			return l, errMissingCommand

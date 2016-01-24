@@ -44,3 +44,8 @@ docker-run:
 	(docker stop supbot &> /dev/null || exit 0) && \
 	(docker rm supbot &> /dev/null || exit 0) && \
 	docker run -i -e SLACK_TOKEN=$(SLACK_TOKEN) --name supbot -t supbot
+
+deploy:
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o supbot_linux_amd64 github.com/gophergala2016/supbot/cmd/supbot && \
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o sup_linux_amd64 github.com/pressly/sup/cmd/sup && \
+	sup prod deploy
