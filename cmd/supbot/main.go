@@ -13,5 +13,5 @@ func main() {
 	}
 
 	s := slack.NewClient(token)
-	s.InitializeRTM()
+	s.Start()
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/gophergala2016/supbot/lib/hal"
 )
 
+// Slack represets a Slack bot.
 type Slack struct {
 	token  string // slack token
 	rtm    *slack.RTM
@@ -25,6 +26,7 @@ var (
 	supBot io.Writer
 )
 
+// NewClient creates a new slack bot.
 func NewClient(token string) *Slack {
 	if len(token) < 1 {
 		panic("supbot: can't seem to start myself")
@@ -34,7 +36,7 @@ func NewClient(token string) *Slack {
 	s := &Slack{token: token, api: api, rtm: api.NewRTM()}
 	go s.rtm.ManageConnection()
 
-	supBot = hal.NewHal(s)
+	supBot = hal.New(s)
 	return s
 }
 
@@ -81,7 +83,8 @@ func (s *Slack) Write(o []byte) (n int, err error) {
 	return len(o), nil
 }
 
-func (s *Slack) InitializeRTM() {
+// Start waits for Slack events.
+func (s *Slack) Start() {
 Loop:
 	for {
 		select {
