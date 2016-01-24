@@ -8,6 +8,9 @@ RUN git clone https://github.com/gophergala2016/supbot.git /src/supbot
 RUN cd /src/supbot && go get -d -v ./... && make build
 RUN cp /src/supbot/bin/supbot /bin/supbot
 
+RUN go get -u github.com/pressly/sup/cmd/sup
+RUN go build -o /bin/sup github.com/pressly/sup/cmd/sup
+
 RUN mkdir -p /var/supbot
 WORKDIR /var/supbot
 
