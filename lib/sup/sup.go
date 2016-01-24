@@ -1,3 +1,15 @@
+/*
+Package sup is a library that allows you to set up and execute
+a sup CLI command.
+
+The Sup type contained within has methods that can be chained together:
+
+	cmd := sup.New(ioWriter).SetWd("cwd").SetNetwork("local").SetTarget("deploy")
+	cmd.Exec()
+
+The working directory for the Sup should be set to a directory that
+contains a Supfile.
+*/
 package sup
 
 import (
@@ -16,6 +28,8 @@ var (
 	_ s.Stackup // NOTE: godeps..
 )
 
+// Sup represents a CLI sup command. It has methods to set it up and
+// execute it.
 type Sup struct {
 	network string
 	target  string
@@ -23,21 +37,36 @@ type Sup struct {
 	writer  io.Writer
 }
 
-func (s *Sup) Network(n string) *Sup {
+// New creates a new Sup. The io.Writer provided to this function will
+// receive the output of the sup command.
+func New(w io.Writer) *Sup {
+	return &Sup{writer: w}
+}
+
+// SetNetwork sets the sup command to use one of the networks described
+// in the Supfile.
+func (s *Sup) SetNetwork(n string) *Sup {
 	s.network = n
 	return s
 }
 
-func (s *Sup) Setwd(wdir string) *Sup {
+// SetWd sets the working directory where the sup command will be executed.
+// This directory should contain a Supfile. If this is not set, this will
+// default to the default Dir of an os.exec.Cmd.
+func (s *Sup) SetWd(wdir string) *Sup {
 	s.wd = wdir
 	return s
 }
 
-func (s *Sup) Target(t string) *Sup {
+// SetTarget sets the sup command to use one of the targets described in
+// the Supfile.
+func (s *Sup) SetTarget(t string) *Sup {
 	s.target = t
 	return s
 }
 
+// Exec executes the sup command. Any output will be transmitted to the
+// io.Writer that was provided to New().
 func (s *Sup) Exec() error {
 	cmd := exec.Command("sup", s.network, s.target)
 	cmd.Dir = s.wd
@@ -58,13 +87,4 @@ func (s *Sup) Exec() error {
 
 	_, err = s.writer.Write(outbuf.Bytes())
 	return err
-}
-
-// TODO: Pass in a command directly
-// func (s *sup) Cmd() {
-// err2 := sup.NewSup(io.Writer).Cmd("Some sup command")
-// }
-
-func NewSup(w io.Writer) *Sup {
-	return &Sup{writer: w}
 }
