@@ -143,17 +143,17 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 
 			// TODO: insert sup magic here.
 			var outbuf bytes.Buffer
-			cmd := sup.NewSup(&outbuf).Setwd(repo.Dir())
+			cmd := sup.New(&outbuf).SetWd(repo.Dir())
 			defer func() {
 				log.Printf("Cleaning %v", repo.Dir())
 				os.RemoveAll(repo.Dir())
 			}()
 
 			if len(chunks) > 0 {
-				cmd.Network(string(chunks[0]))
+				cmd.SetNetwork(string(chunks[0]))
 			}
 			if len(chunks) > 1 {
-				cmd.Target(string(chunks[1]))
+				cmd.SetTarget(string(chunks[1]))
 			}
 
 			err = cmd.Exec()
