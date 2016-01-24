@@ -1,10 +1,12 @@
-FROM ubuntu:14.04
+FROM golang:1.5.3
 
 RUN apt-get update
-RUN apt-get install -y ca-certificates git bzr mercurial
+RUN apt-get install -y ca-certificates git bzr mercurial make
 
-COPY sup_linux_amd64 /bin/sup
-COPY supbot_linux_amd64 /bin/supbot
+RUN mkdir -p /src/supbot
+RUN git clone https://github.com/gophergala2016/supbot.git /src/supbot
+RUN cd /src/supbot && go get -d -v ./... && make build
+RUN cp /src/supbot/bin/supbot /bin/supbot
 
 RUN mkdir -p /var/supbot
 WORKDIR /var/supbot

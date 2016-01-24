@@ -27,6 +27,8 @@ commands: # Named set of commands to be run remotely
     upload:
       - src: ./
         dst: $WORKDIR/$NAME
+  pull:
+    script: git clone https://github.com/gophergala2016/supbot.git $WORKDIR/$NAME
   build:
     run: cd $WORKDIR/$NAME && docker build -t $NAME .
   image:
@@ -62,7 +64,8 @@ targets:
   deploy:
     - ping
     - check
-    - upload
+#    - upload
+    - pull
     - build
     - image
     - stop
