@@ -22,12 +22,35 @@ How about using a remote network and not only the local one? Yes:
 
 ![screen shot 2016-01-24 at 4 01 04 pm](https://cloud.githubusercontent.com/assets/385670/12538901/cee918b8-c2b3-11e5-9974-b4f8a68fea46.png)
 
+## Checking out the repo
+
+```
+cd ~/projects
+git checkout https://github.com/gophergala2016/supbot.git
+```
+
 ## Deploying to a server
 
-This deploys to the server specified by the `Supfile`.
+You can use `sup` to deploy to a server as defined in the `Supfile`.
+
+```
+# This is a portion of the supfile
+networks:
+  ...
+  prod:
+    hosts:
+      - deploy@162.243.9.244
+```
 
 ```
 make deploy
+```
+
+If you want to try it locally, use `make docker` to build the docker image,
+then use `make docker-run` to run this server locally.
+
+```
+SLACK_TOKEN=yyy make docker-run
 ```
 
 ## Deploying to Heroku
