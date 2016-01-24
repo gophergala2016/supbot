@@ -64,43 +64,39 @@ func (s *Sup) Exec() error {
 
 	// Do some piping magic here
 	old := os.Stdout
-	oldErr := os.Stderr
+	//oldErr := os.Stderr
+
 	read, write, _ := os.Pipe()
-	errRead, errWrite, _ := os.Pipe()
+	//errRead, errWrite, _ := os.Pipe()
 
 	os.Stdout = write
-	os.Stderr = errWrite
+	//os.Stderr = errWrite
 
 	var out string
-	var errOut string
+	//var errOut string
 
 	err := s.Run(&network, cmds...)
 
 	write.Close()
-	errWrite.Close()
+	//errWrite.Close()
 
-	if err == nil {
-		//out := fmt.Sprintf("<@%s>: \n", msg.User)
-		scanner := bufio.NewScanner(read)
-		for scanner.Scan() {
-			out = fmt.Sprintf("%s %s\n", out, scanner.Text())
-		}
-
-		scanner = bufio.NewScanner(errRead)
-		for scanner.Scan() {
-			errOut = fmt.Sprintf("%s %s\n", errOut, scanner.Text())
-		}
-
+	//if err == nil {
+	scanner := bufio.NewScanner(read)
+	for scanner.Scan() {
+		out = fmt.Sprintf("%s %s\n", out, scanner.Text())
 	}
-	os.Stdout = old    // reset stdout
-	os.Stderr = oldErr // reset stderr
 
-	if err != nil {
-		log.Printf("got this RUN error %v\n\n", err)
-	}
+	//scanner = bufio.NewScanner(errRead)
+	//for scanner.Scan() {
+	//errOut = fmt.Sprintf("%s %s\n", errOut, scanner.Text())
+	//}
+
+	//}
+	os.Stdout = old // reset stdout
+	//os.Stderr = oldErr // reset stderr
 
 	log.Printf("got this stdout: %v", out)
-	log.Printf("got this stderr: %v", errOut)
+	//log.Printf("got this stderr: %v", errOut)
 
 	//_, err = s.writer.Write(outbuf.Bytes())
 	_, err = s.writer.Write([]byte(out))
