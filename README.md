@@ -18,6 +18,8 @@ You can do anything Sup can do, directly from Slack.
 
 ![screen shot 2016-01-24 at 3 27 42 pm](https://cloud.githubusercontent.com/assets/385670/12538719/1a5c1f48-c2af-11e5-94d9-0be574897f67.png)
 
+![screen shot 2016-01-24 at 4 01 04 pm](https://cloud.githubusercontent.com/assets/385670/12538901/cee918b8-c2b3-11e5-9974-b4f8a68fea46.png)
+
 ## Deploying to a server
 
 This deploys to the server specified by the `Supfile`.
