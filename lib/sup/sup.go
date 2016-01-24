@@ -76,8 +76,8 @@ func (s *Sup) Exec() error {
 
 	var out string
 	var errOut string
-	if err := s.Run(&network, cmds...); err == nil {
-
+	err := s.Run(&network, cmds...)
+	if err == nil {
 		//out := fmt.Sprintf("<@%s>: \n", msg.User)
 		scanner := bufio.NewScanner(read)
 		for scanner.Scan() {
