@@ -49,6 +49,18 @@ commands: # Named set of commands to be run remotely
         -v /home/deploy/data:/var/supbot \
         --name $NAME \
         -t $NAME
+  restart-nohup:
+    run: >
+      nohup (docker rm $NAME || exit 0) && \
+      (docker start $NAME || exit 0) && \
+      mkdir -p /home/deploy/data && cd $WORKDIR/$NAME && docker run \
+        -d \
+        -e SLACK_TOKEN=$SLACK_TOKEN \
+        --restart=always \
+        -v /home/deploy/.ssh:/root/.ssh \
+        -v /home/deploy/data:/var/supbot \
+        --name $NAME \
+        -t $NAME
   ps:
     run: docker ps | grep $NAME
   logs:
@@ -73,6 +85,14 @@ targets:
     - rm
     - run
     - ps
+  self-deploy:
+    - ping
+    - check
+#    - upload
+    - pull
+    - build
+    - image
+    - restart-nohup
   init:
     - ping
     - install
