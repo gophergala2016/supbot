@@ -1,5 +1,7 @@
 .PHONY: help run build build_pkgs install clean
 
+SLACK_TOKEN ?= xoxb-19232920311-vb7KYcw8EpdfcN9Qz3v7cWpl
+
 help:
 	@echo "run:     Run code in dev mode."
 	@echo "build:   Build code."
@@ -34,3 +36,11 @@ deps:
 update_deps:
 	@glock save -n github.com/gophergala2016/supbot > Glockfile
 
+docker:
+	GOOS=linux GOARCH=amd64 go build -o supbot_linux_amd64 github.com/gophergala2016/supbot/cmd/supbot && \
+	docker build -t supbot .
+
+docker-run:
+	(docker stop supbot &> /dev/null || exit 0) && \
+	(docker rm supbot &> /dev/null || exit 0) && \
+	docker run -i -e SLACK_TOKEN=$(SLACK_TOKEN) --name supbot -t supbot

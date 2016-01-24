@@ -2,3 +2,4 @@
 bin
 cmd/*/tmp
 *.db
+supbot_linux_amd64
