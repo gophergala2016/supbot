@@ -29,6 +29,14 @@ cd ~/projects
 git checkout https://github.com/gophergala2016/supbot.git
 ```
 
+## Obtaining a Slack token
+
+Your deployment of the Slack bot will require a Slack bot token. This token will need to be set to the `SLACK_TOKEN` environment variable.
+
+To obtain this token, you will need to sign into Slack and request a custom bot integration for your team's subdomain. At the time of writing (Jan 24 2016), you can start this process at the following URL:
+
+`https://[your-team-subdomain].slack.com/apps/build/custom-integration`
+
 ## Deploying to a server
 
 You can use `sup` to deploy to a server as defined in the `Supfile`.
