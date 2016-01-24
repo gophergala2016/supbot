@@ -6,9 +6,9 @@ import (
 	"testing"
 )
 
-func TestNewSup(t *testing.T) {
+func TestNew(t *testing.T) {
 	var b bytes.Buffer
-	if err := NewSup(&b).Network("local").Target("ping").Setwd("../../cmd/supbot").Exec(); err != nil {
+	if err := New(&b).SetNetwork("local").SetTarget("ping").SetWd("../../cmd/supbot").Exec(); err != nil {
 		log.Fatalln("Testing error:", err)
 	}
 
