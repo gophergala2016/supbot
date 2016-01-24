@@ -74,7 +74,7 @@ commands: # Named set of commands to be run remotely
     run: ls -al /
 
 targets:
-  deploy:
+  old-deploy:
     - ping
     - check
 #    - upload
@@ -85,7 +85,7 @@ targets:
     - rm
     - run
     - ps
-  self-deploy:
+  deploy:
     - ping
     - check
 #    - upload
