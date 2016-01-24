@@ -71,12 +71,14 @@ func (s *Sup) Exec() error {
 	os.Stdout = write
 	os.Stderr = errWrite
 
+	var out string
+	var errOut string
+
+	err := s.Run(&network, cmds...)
+
 	write.Close()
 	errWrite.Close()
 
-	var out string
-	var errOut string
-	err := s.Run(&network, cmds...)
 	if err == nil {
 		//out := fmt.Sprintf("<@%s>: \n", msg.User)
 		scanner := bufio.NewScanner(read)
@@ -94,11 +96,11 @@ func (s *Sup) Exec() error {
 	os.Stderr = oldErr // reset stderr
 
 	if err != nil {
-		log.Println("got this RUN error %v\n\n", err)
+		log.Printf("got this RUN error %v\n\n", err)
 	}
 
-	log.Println("got this stdout: %v", out)
-	log.Println("got this stderr: %v", errOut)
+	log.Printf("got this stdout: %v", out)
+	log.Printf("got this stderr: %v", errOut)
 
 	//_, err = s.writer.Write(outbuf.Bytes())
 	_, err = s.writer.Write([]byte(out))
