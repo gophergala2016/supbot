@@ -9,6 +9,7 @@ import (
 	"os/exec"
 )
 
+// Repo represents a github repository.
 type Repo struct {
 	url string
 	dir string
@@ -35,6 +36,7 @@ func execCommand(cwd string, name string, args ...string) ([]byte, error) {
 	return stdout.Bytes(), nil
 }
 
+// Clone clones a github repo into a temporary directory.
 func Clone(uri string) (*Repo, error) {
 	// TODO: Create per-URL temp dir with fmt.Sprintf("supbot-%x", sha1.Sum([]byte(URL)))
 	//       and then create (shallow) clones locally to speed things up.
@@ -54,6 +56,7 @@ func Clone(uri string) (*Repo, error) {
 	}, nil
 }
 
+// Checkout checks out a branch from the current repo.
 func (r *Repo) Checkout(branch string) error {
 	if r.dir == "" {
 		return errors.New("Missing dir.")
@@ -63,6 +66,7 @@ func (r *Repo) Checkout(branch string) error {
 	return err
 }
 
+// Dir returns the temporary directory.
 func (r *Repo) Dir() string {
 	return r.dir
 }

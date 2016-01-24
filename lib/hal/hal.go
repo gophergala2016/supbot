@@ -19,18 +19,15 @@ var space = []byte(` `)
 var _ = io.Writer(&Hal{})
 
 var (
-	msgMissingCommand = `Say what?!`
+	errMissingCommand  = errors.New(`Missing command.`)
+	errUnexpectedIssue = errors.New(`An unexpected issue has occured.`)
 )
 
+// Hal is a bot that waits for sup commands.
 type Hal struct {
 	out  io.Writer
 	repo string // current working directory.
 }
-
-var (
-	errMissingCommand  = errors.New(`Missing command.`)
-	errUnexpectedIssue = errors.New(`An unexpected issue has occured.`)
-)
 
 var db *bolt.DB
 
@@ -48,7 +45,8 @@ func init() {
 
 }
 
-func NewHal(out io.Writer) *Hal {
+// New creates a hal bot, expects a writer to write slack messages.
+func New(out io.Writer) *Hal {
 	h := &Hal{
 		out: out,
 	}
@@ -84,6 +82,7 @@ func (h *Hal) restore() error {
 	return err
 }
 
+// Write implements a io.Writer that expects messages from users.
 func (h *Hal) Write(cmd []byte) (n int, err error) {
 	l := len(cmd)
 
@@ -93,7 +92,7 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 	chunks := bytes.Split(cmd, space)
 
 	if len(chunks) < 1 {
-		h.out.Write([]byte(msgMissingCommand))
+		h.out.Write([]byte("Say what?!"))
 		return l, errMissingCommand
 	}
 
@@ -129,10 +128,14 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 			// TODO: grab branch name from URL, if any.
 			repo, err := git.Clone(h.repo)
 			if err != nil {
+				h.out.Write([]byte(fmt.Sprintf("I'm sorry Dave, %v", err)))
+				h.out.Write([]byte("Clone failed."))
 				return l, err
 			}
 
 			if err := repo.Checkout("master"); err != nil {
+				h.out.Write([]byte(fmt.Sprintf("I'm sorry Dave, %v", err)))
+				h.out.Write([]byte("Check out failed."))
 				return l, err
 			}
 
@@ -147,24 +150,23 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 			}()
 
 			if len(chunks) > 0 {
-				cmd.Network(string(chunks[0]))
+				cmd.SetNetwork(string(chunks[0]))
 			}
 			if len(chunks) > 1 {
-				cmd.Target(string(chunks[1]))
+				cmd.SetTarget(string(chunks[1]))
 			}
 
 			err = cmd.Exec()
 			if err != nil {
-				h.out.Write([]byte(fmt.Sprintf("I can't let you do that, Dave. %v", err)))
+				h.out.Write([]byte(fmt.Sprintf("I'm sorry Dave, %v", err)))
 				return l, err
 			}
 
 			h.out.Write(outbuf.Bytes())
-			return l, err
-		} else {
-			h.out.Write([]byte(fmt.Sprintf("Missing repo, try `set-repo [repo-url]`")))
-			return l, errMissingCommand
+			return l, nil
 		}
+		h.out.Write([]byte(fmt.Sprintf("Missing repo, try `set-repo [repo-url]`")))
+		return l, errMissingCommand
 	}
 
 	// Catch-all, this should never run

@@ -1,28 +1,34 @@
 # supbot
-Simple slack bot powered deployment tool with Sup
 
-```
-lib/slack // slack bot things
-lib/sup // sup wrapper things
-lib/hal // instruction parser things
-```
-
-`Sup...Slack?`
+> Sup... Slack?
 
 ## What is Sup?
 
-`Sup` (https://github.com/pressly/sup) let's you quickly execute remote commands
-on remote machines based on predefined and simple rules.
-
+[Sup](https://github.com/pressly/sup) let's you execute commands on remote
+machines based on predefined and simple rules.
 
 ## What is Supbot?
 
-Supbot is a slack bot that listens to Sup commands. You can easily monitor,
-deploy, bring-up, bring-down, tail logs... on any environment, across any
-network directly from your slack channel.
+Supbot is a [Slack](https://www.slack.com) bot that listens to Sup commands.
+
+You can easily monitor, deploy, bring-up, bring-down, tail logs... on any
+environment, across any network directly from your Slack channel.
 
 You can do anything Sup can do, directly from Slack.
 
+![screen shot 2016-01-24 at 3 27 42 pm](https://cloud.githubusercontent.com/assets/385670/12538719/1a5c1f48-c2af-11e5-94d9-0be574897f67.png)
+
+How about using a remote network and not only the local one? Yes:
+
+![screen shot 2016-01-24 at 4 01 04 pm](https://cloud.githubusercontent.com/assets/385670/12538901/cee918b8-c2b3-11e5-9974-b4f8a68fea46.png)
+
+## Deploying to a server
+
+This deploys to the server specified by the `Supfile`.
+
+```
+make deploy
+```
 
 ## Deploying to Heroku
 
@@ -52,10 +58,3 @@ Some pointers:
 
 - you might need to run `heroku ps:scale worker=1` to scale dyno manually
 
-
-### Changelog:
-
-
-v 0.1
-- now with 100% more HAL9000
-- heroku ready!

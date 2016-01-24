@@ -2,22 +2,97 @@
 ---
 
 env: # Environment variables for the commands
-  NAME: example
+  NAME: supbot
   REPO: github.com/gophergala2016/supbot
   BRANCH: master
   IMAGE: supbot
-  HOST_PORT: 8000
-  CONTAINER_PORT: 8000
+  WORKDIR: /home/deploy/workdir
+  SLACK_TOKEN: xoxb-19232920311-vb7KYcw8EpdfcN9Qz3v7cWpl
 
 networks: # Groups of hosts
   local:
     hosts:
       - localhost
+  prod:
+    hosts:
+      - deploy@162.243.9.244
 
 commands: # Named set of commands to be run remotely
   ping:
     desc: Print uname and current date/time.
     run: uname -a; date
+  check:
+    run: rm -rf $WORKDIR/$NAME && mkdir -p $WORKDIR/$NAME
+  upload:
+    upload:
+      - src: ./
+        dst: $WORKDIR/$NAME
+  pull:
+    run: git clone https://github.com/gophergala2016/supbot.git $WORKDIR/$NAME
+  build:
+    run: cd $WORKDIR/$NAME && docker build -t $NAME .
+  image:
+    run: docker images | grep $NAME
+  stop:
+    run: docker stop $NAME || exit 0
+  rm:
+    run: docker rm $NAME || exit 0
+  start:
+    run: docker start $NAME || exit 0
+  run:
+    run: >
+      mkdir -p /home/deploy/data && cd $WORKDIR/$NAME && docker run \
+        -d \
+        -e SLACK_TOKEN=$SLACK_TOKEN \
+        --restart=always \
+        -v /home/deploy/.ssh:/root/.ssh \
+        -v /home/deploy/data:/var/supbot \
+        --name $NAME \
+        -t $NAME
+  restart-nohup:
+    run: >
+      nohup sh -c '(docker stop $NAME || exit 0) &&
+      (docker rm $NAME || exit 0) &&
+      mkdir -p /home/deploy/data && cd $WORKDIR/$NAME && docker run \
+        -d \
+        -e SLACK_TOKEN=$SLACK_TOKEN \
+        --restart=always \
+        -v /home/deploy/.ssh:/root/.ssh \
+        -v /home/deploy/data:/var/supbot \
+        --name $NAME \
+        -t $NAME'
+  ps:
+    run: docker ps | grep $NAME
+  logs:
+    run: docker logs $NAME
+  install:
+    run: sudo apt-get update && apt-get install -y git vim tmux
+  reboot:
+    run: sudo reboot
   lsroot:
     desc: List the root directory
     run: ls -al /
+
+targets:
+  old-deploy:
+    - ping
+    - check
+#    - upload
+    - pull
+    - build
+    - image
+    - stop
+    - rm
+    - run
+    - ps
+  deploy:
+    - ping
+    - check
+#    - upload
+    - pull
+    - build
+    - image
+    - restart-nohup
+  init:
+    - ping
+    - install

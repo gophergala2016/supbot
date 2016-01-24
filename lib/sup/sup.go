@@ -1,3 +1,15 @@
+/*
+Package sup is a library that allows you to set up and execute
+a sup CLI command.
+
+The Sup type contained within has methods that can be chained together:
+
+	cmd := sup.New(ioWriter).SetWd("cwd").SetNetwork("local").SetTarget("deploy")
+	cmd.Exec()
+
+The working directory for the Sup should be set to a directory that
+contains a Supfile.
+*/
 package sup
 
 import (
@@ -11,6 +23,8 @@ import (
 	stackup "github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/pressly/sup"
 )
 
+// Sup represents a CLI sup command. It has methods to set it up and
+// execute it.
 type Sup struct {
 	// stackup app
 	*stackup.Stackup
@@ -36,6 +50,8 @@ func stripColor(msg string) string {
 	return msg
 }
 
+// New creates a new Sup. The io.Writer provided to this function will
+// receive the output of the sup command.
 func New(w io.Writer, wdir string) (*Sup, error) {
 	// load the supfile
 	conf, err := stackup.NewSupfile(fmt.Sprintf("%s/Supfile", wdir))
@@ -52,16 +68,30 @@ func New(w io.Writer, wdir string) (*Sup, error) {
 	return &Sup{Stackup: app, writer: w, config: conf}, nil
 }
 
-func (s *Sup) Network(n string) *Sup {
+// SetNetwork sets the sup command to use one of the networks described
+// in the Supfile.
+func (s *Sup) SetNetwork(n string) *Sup {
 	s.network = n
 	return s
 }
 
-func (s *Sup) Target(t string) *Sup {
+// SetWd sets the working directory where the sup command will be executed.
+// This directory should contain a Supfile. If this is not set, this will
+// default to the default Dir of an os.exec.Cmd.
+func (s *Sup) SetWd(wdir string) *Sup {
+	s.wd = wdir
+	return s
+}
+
+// SetTarget sets the sup command to use one of the targets described in
+// the Supfile.
+func (s *Sup) SetTarget(t string) *Sup {
 	s.target = t
 	return s
 }
 
+// Exec executes the sup command. Any output will be transmitted to the
+// io.Writer that was provided to New().
 func (s *Sup) Exec() error {
 	//TODO: stderr capture
 	network, ok := s.config.Networks[s.network]
@@ -92,8 +122,3 @@ func (s *Sup) Exec() error {
 	_, err = s.writer.Write([]byte(out))
 	return err
 }
-
-// TODO: Pass in a command directly
-// func (s *sup) Cmd() {
-// err2 := sup.NewSup(io.Writer).Cmd("Some sup command")
-// }

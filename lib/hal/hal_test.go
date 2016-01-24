@@ -43,7 +43,7 @@ func TestSendCommand(t *testing.T) {
 
 	buf := bytes.NewBuffer(nil)
 
-	hal := NewHal(buf)
+	hal := New(buf)
 
 	for _, c := range testCommands {
 		_, err := hal.Write([]byte(c.command))
