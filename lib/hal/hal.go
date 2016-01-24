@@ -138,9 +138,9 @@ func (h *Hal) Write(cmd []byte) (n int, err error) {
 
 			h.out.Write([]byte(fmt.Sprintf("Running sup...")))
 
-			// TODO: insert sup magic here.
 			var outbuf bytes.Buffer
-			cmd := sup.NewSup(&outbuf).Setwd(repo.Dir())
+			// TODO: check error
+			cmd, _ := sup.NewSup(&outbuf, repo.Dir())
 			defer func() {
 				log.Printf("Cleaning %v", repo.Dir())
 				os.RemoveAll(repo.Dir())

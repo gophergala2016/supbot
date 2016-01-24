@@ -1,35 +1,33 @@
 package sup
 
 import (
-	"bytes"
+	"bufio"
+	"errors"
+	"fmt"
 	"io"
-	"log"
-	"os/exec"
-	"strings"
+	"os"
 
-	s "github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/pressly/sup"
-)
-
-var supCommand string
-
-var (
-	_ s.Stackup // NOTE: godeps..
+	stackup "github.com/gophergala2016/supbot/Godeps/_workspace/src/github.com/pressly/sup"
 )
 
 type Sup struct {
+	// stackup app
+	*stackup.Stackup
+	// loaded Supfile config
+	config *stackup.Supfile
+
 	network string
 	target  string
 	wd      string
 	writer  io.Writer
 }
 
+var (
+	ErrInvalidTarget = errors.New("invalid target")
+)
+
 func (s *Sup) Network(n string) *Sup {
 	s.network = n
-	return s
-}
-
-func (s *Sup) Setwd(wdir string) *Sup {
-	s.wd = wdir
 	return s
 }
 
@@ -39,24 +37,48 @@ func (s *Sup) Target(t string) *Sup {
 }
 
 func (s *Sup) Exec() error {
-	cmd := exec.Command("sup", s.network, s.target)
-	cmd.Dir = s.wd
-	log.Println("Command:", strings.Join(cmd.Args, " "))
-	log.Printf("Working Directory: %v", cmd.Dir)
+	//cmd := exec.Command("sup", s.network, s.target)
+	//cmd.Dir = s.wd
+	//log.Println("Command:", strings.Join(cmd.Args, " "))
+	//log.Printf("Working Directory: %v", cmd.Dir)
 
-	var outbuf bytes.Buffer
-	var errbuf bytes.Buffer
+	//var outbuf bytes.Buffer
+	//var errbuf bytes.Buffer
 
-	cmd.Stdout = &outbuf
-	cmd.Stderr = &errbuf
+	//cmd.Stdout = &outbuf
+	//cmd.Stderr = &errbuf
 
-	err := cmd.Run()
-	if err != nil {
-		s.writer.Write(errbuf.Bytes())
-		return err
+	//err := cmd.Run()
+	//if err != nil {
+	//s.writer.Write(errbuf.Bytes())
+	//return err
+	//}
+	network, _ := s.config.Networks[s.network]
+
+	command, isCommand := s.config.Commands[s.target]
+	if !isCommand {
+		return ErrInvalidTarget
 	}
+	cmds := []*stackup.Command{&command}
 
-	_, err = s.writer.Write(outbuf.Bytes())
+	// Do some piping magic here
+	old := os.Stdout
+	read, write, _ := os.Pipe()
+
+	os.Stdout = write
+	s.Run(&network, cmds...)
+	write.Close()
+
+	//out := fmt.Sprintf("<@%s>: \n", msg.User)
+	var out string
+	scanner := bufio.NewScanner(read)
+	for scanner.Scan() {
+		out = fmt.Sprintf("%s %s\n", out, scanner.Text())
+	}
+	os.Stdout = old // reset stdout
+
+	//_, err = s.writer.Write(outbuf.Bytes())
+	_, err := s.writer.Write([]byte(out))
 	return err
 }
 
@@ -65,6 +87,18 @@ func (s *Sup) Exec() error {
 // err2 := sup.NewSup(io.Writer).Cmd("Some sup command")
 // }
 
-func NewSup(w io.Writer) *Sup {
-	return &Sup{writer: w}
+func NewSup(w io.Writer, wdir string) (*Sup, error) {
+	// load the supfile
+	conf, err := stackup.NewSupfile(fmt.Sprintf("%s/Supfile", wdir))
+	if err != nil {
+		return nil, err
+	}
+
+	// create new Stackup app.
+	app, err := stackup.New(conf)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Sup{Stackup: app, writer: w, config: conf}, nil
 }
