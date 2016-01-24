@@ -69,7 +69,7 @@ func (s *Sup) Exec() error {
 	errRead, errWrite, _ := os.Pipe()
 
 	os.Stdout = write
-	os.StdErr = errWrite
+	os.Stderr = errWrite
 	err := s.Run(&network, cmds...)
 	if err != nil {
 		log.Println("got error %v", err)
@@ -84,7 +84,7 @@ func (s *Sup) Exec() error {
 		out = fmt.Sprintf("%s %s\n", out, scanner.Text())
 	}
 	var errOut string
-	scanner := bufio.NewScanner(errRead)
+	scanner = bufio.NewScanner(errRead)
 	for scanner.Scan() {
 		errOut = fmt.Sprintf("%s %s\n", errOut, scanner.Text())
 	}
