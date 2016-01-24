@@ -9,17 +9,11 @@ lib/hal // instruction parser things
 
 `Sup...Slack?`
 
-## What is Supbot/Supslack?
+## What is Sup?
 
 `Sup` (https://github.com/pressly/sup) let's you quickly execute remote commands
-on remote machines based on predefined and simple rules. As explained by the
-project: 
+on remote machines based on predefined and simple rules.
 
-```
-Stack Up is a simple deployment tool that performs given set of commands on multiple hosts in parallel.
-It reads Supfile, a YAML configuration file, which defines networks (groups of hosts), commands and targets.
-
-```
 
 ## What is Supbot?
 
