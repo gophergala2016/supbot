@@ -49,7 +49,6 @@ func (s *Slack) wasMentioned(msg string) bool {
 // expect some byte and write to slack
 func (s *Slack) Write(o []byte) (n int, err error) {
 	outBuf := bytes.Buffer{}
-	outBuf.Write(o)
 
 	s.rtm.SendMessage(
 		s.rtm.NewOutgoingMessage(
